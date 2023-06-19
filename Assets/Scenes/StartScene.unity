@@ -152,7 +152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8d0cb75a68a9b843960e69facbad975, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _levelDataCollection: {fileID: 11400000, guid: 9100db96a137eea4cbe3ca892adcac10, type: 2}
+  downloadedLevels: []
 --- !u!4 &135845130
 Transform:
   m_ObjectHideFlags: 0
@@ -337,6 +337,69 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   m_MaxRayIntersections: 0
+--- !u!1 &1728052262
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1728052264}
+  - component: {fileID: 1728052263}
+  m_Layer: 0
+  m_Name: LevelManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1728052263
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1728052262}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ef6275baa81d5a4bad4c13a88056b1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  levelDataCollection: {fileID: 11400000, guid: 9100db96a137eea4cbe3ca892adcac10, type: 2}
+--- !u!4 &1728052264
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1728052262}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.110472, y: -0.1072696, z: -0.030404953}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1816856168 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4054795926860773222, guid: 04221c20e6dec7344b84cb45a35895f7, type: 3}
+  m_PrefabInstance: {fileID: 4054795928408142094}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1816856172
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1816856168}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 738ff6723f6bdf4459ed3fa7749a9e37, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _levelsPopupPrefab: {fileID: 6867983764980845928, guid: f5a36edc74964a04d96032cb6853cf6f, type: 3}
 --- !u!1001 &4054795928408142094
 PrefabInstance:
   m_ObjectHideFlags: 0

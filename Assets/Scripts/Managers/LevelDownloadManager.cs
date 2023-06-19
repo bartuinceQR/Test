@@ -5,6 +5,7 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
+using Managers;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -15,9 +16,6 @@ public class LevelDownloadManager : MonoBehaviour
     private const string URL_BASE_STRING = "https://row-match.s3.amazonaws.com/levels/";
     private const string LEVEL_PREFIX = "RM_";
     private const string PERSISTENT_DATA_NAME = "DownloadedLevels";
-
-    [SerializeField] 
-    private LevelDataCollection _levelDataCollection;
 
     public List<LevelData> downloadedLevels = new List<LevelData>();
 
@@ -31,7 +29,8 @@ public class LevelDownloadManager : MonoBehaviour
         } 
         else 
         { 
-            Instance = this; 
+            Instance = this;
+            DontDestroyOnLoad(this);
         } 
     }
 
@@ -44,6 +43,7 @@ public class LevelDownloadManager : MonoBehaviour
         else
         {
             LoadDownloadedLevels();
+            LevelManager.Instance.AddDownloadedLevels();
         }
     }
 
@@ -101,10 +101,7 @@ public class LevelDownloadManager : MonoBehaviour
             {
                 var op = request.SendWebRequest();
 
-                while (!op.isDone)
-                {
-                    Task.Yield();
-                }
+                while (!op.isDone) { Task.Yield(); }
 
                 LevelData levelData = LevelJSONConverter.ConvertToLevelData(request.downloadHandler.text);
                 missingLevels.Add(levelData);
@@ -118,18 +115,16 @@ public class LevelDownloadManager : MonoBehaviour
             Directory.CreateDirectory(Path.GetDirectoryName(filePath));
         }
 
-        ListOfLevelData list = new ListOfLevelData();
-        list.levels = missingLevels;
+        ListOfLevelData list = new ListOfLevelData(){levels = missingLevels};
         
         string jsonData = JsonUtility.ToJson(list, true);
         byte[] byteData;
         
         byteData = Encoding.ASCII.GetBytes(jsonData);
         
-        // attempt to save here data
         try
         {
-            // save datahere
+            // save data here
             File.WriteAllBytes(filePath, byteData);
             Debug.Log("Save data to: " + filePath);
         }
@@ -146,10 +141,9 @@ public class LevelDownloadManager : MonoBehaviour
     {
         var filePath = Path.Combine(Application.persistentDataPath, ("data/" + PERSISTENT_DATA_NAME));
         
-        // if the file path or name does not exist, return the default SO
         if (!Directory.Exists(Path.GetDirectoryName(filePath)))
         {
-            Debug.LogWarning("File or path does not exist! " + filePath);
+            Debug.LogWarning("Path does not exist! " + filePath);
             return;
         }
 

@@ -26,7 +26,7 @@ public class MenuScroll : MonoBehaviour, IPointerClickHandler, IPointerDownHandl
             levelObjects.Add(moveRoot.GetChild(i).GetComponent<SpriteRenderer>());
         }
         
-        startPos = moveRoot.localPosition;
+        startPos = moveRoot.position;
         float itemsY = 0;
 
         foreach (var renderer in levelObjects)

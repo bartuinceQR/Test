@@ -1,18 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class MenuButton : MonoBehaviour
+namespace Menu
 {
-    // Start is called before the first frame update
-    void Start()
+    public class MenuButton : MonoBehaviour, IPointerClickHandler
     {
-        
-    }
+        [SerializeField] private GameObject _levelsPopupPrefab;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            Instantiate(_levelsPopupPrefab, transform.position, Quaternion.identity);
+            gameObject.SetActive(false);
+        }
     }
 }
