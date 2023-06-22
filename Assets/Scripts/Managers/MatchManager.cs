@@ -56,13 +56,17 @@ public class MatchManager : MonoBehaviour
         tweenSeq.OnComplete(() =>
         {
             var fromItemObj = from.GetItemObject();
-            from.SetItemObject(to.GetItemObject());
-            to.SetItemObject(fromItemObj);
+            ItemType fromItemType = from.GetItemType();
+            from.SetItemObject(to.GetItemObject(), to.GetItemType());
+            to.SetItemObject(fromItemObj, fromItemType);
+            
+            GameplayManager.Instance.CheckRows(from, to);
+
+            boardState = BoardState.Unlocked;
+            holdingSwap = false;
+            currentlySelectedSquare = null;
         });
 
-        boardState = BoardState.Unlocked;
-        holdingSwap = false;
-        currentlySelectedSquare = null;
     }
 }
 public enum BoardState

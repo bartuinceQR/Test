@@ -4,5 +4,6 @@ public enum ItemType
     Blue,
     Green,
     Colorless,
-    Completed
+    Completed,
+    None
 }

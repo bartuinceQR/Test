@@ -12,9 +12,10 @@ public class GameplayManager : MonoBehaviour
     [SerializeField] private GameObject squarePrefab;
 
 
-    private Dictionary<SquarePosition, Square> _squares = new Dictionary<SquarePosition, Square>();
+    private Square[][] _squares;
 
-
+    private LevelData currentLevelData;
+    
     public static GameplayManager Instance { get; private set; }
 
     private void Awake()
@@ -45,23 +46,76 @@ public class GameplayManager : MonoBehaviour
         float squareHeight = squarePrefab.GetComponent<Square>().GetSquareSize().y;
 
         Vector3 offset = new Vector3(width / 2f * squareWidth, height / 2f * squareHeight, 0f);
-
         bottomLeft.position = boardCenter.position - offset;
-
         Vector3 startPos = bottomLeft.position + new Vector3(squareWidth / 2, squareHeight / 2, 0);
+
+
+        _squares = new Square[height][];
 
         for (int row = 0; row < height; row++)
         {
+            _squares[row] = new Square[width];
+            
             for (int col = 0; col < width; col++)
             {
                 Vector3 squareOffset = new Vector3(col * squareWidth, row * squareHeight, 0);
 
                 var square = Instantiate(squarePrefab, startPos + squareOffset, Quaternion.identity, bottomLeft).GetComponent<Square>();
                 square.Init(col, row, levelData.grid[row * width + col]);
-                _squares.Add(square.GetCoordinates(), square);
+                _squares[row][col] = square;
             }
         }
 
-
+        currentLevelData = levelData;
     }
+    
+    public void CheckRows(Square startSquare, Square endSquare)
+    {
+        int row1 = startSquare.GetCoordinates().row;
+        int row2 = endSquare.GetCoordinates().row;
+
+        int width = currentLevelData.grid_width;
+
+        List<int> rows = new List<int>() { row1, row2 };
+
+        foreach (var row in rows)
+        {
+            ItemType rowItemType = ItemType.None;
+            bool allSame = true;
+        
+            for (int i = 0; i < width; i++)
+            {
+                Square square = _squares[row][i];
+
+                if (rowItemType == ItemType.None)
+                {
+                    rowItemType = square.GetItemType();
+                }
+                else if (square.GetItemType() != rowItemType)
+                {
+                    allSame = false;
+                    break;
+                }
+            }
+
+            if (allSame)
+            {
+                ClearRow(row);
+            }
+        }
+    }
+
+
+    void ClearRow(int row)
+    {
+        int width = currentLevelData.grid_width;
+
+        for (int i = 0; i < width; i++)
+        {
+            Square square = _squares[row][i];
+
+            square.SetItemType(ItemType.Completed);
+        }
+    }
+    
 }

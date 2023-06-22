@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
@@ -35,10 +36,12 @@ public class Square : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, 
         return itemObject;
     }
 
-    public void SetItemObject(Transform itemObj)
+    public void SetItemObject(Transform itemObj, ItemType itemType)
     {
         itemObject = itemObj;
         itemObject.SetParent(itemCenter);
+        itemSprite = itemObject.GetComponentInChildren<SpriteRenderer>();
+        m_ItemType = itemType;
     }
 
     public SquarePosition GetCoordinates()
@@ -94,9 +97,7 @@ public class Square : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, 
     public void OnPointerDown(PointerEventData eventData)
     {
         if (MatchManager.Instance.boardState != BoardState.Unlocked) return;
-        
-        Debug.LogError("eeeeEEEEEE");
-        
+
         MatchManager.Instance.holdingSwap = true;
         MatchManager.Instance.currentlySelectedSquare = this;
     }
@@ -138,8 +139,9 @@ public class SquarePosition
         this.row = row;
     }
 
-    public override string ToString()
+    //definitely me when I forget how to override Equals and GetHashCode
+    public string CoordsInString()
     {
-        return "Coords: [" + col + ", " + row + "]";
+        return col + "," + row;
     }
 }
