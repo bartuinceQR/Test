@@ -26,10 +26,4 @@ public class LevelsPopup : MonoBehaviour
             positionOffset -= new Vector2(0, distance * spacingMultiplier / levelItem.transform.localScale.y);
         }
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

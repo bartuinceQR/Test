@@ -9,53 +9,53 @@ public class MenuScroll : MonoBehaviour, IPointerClickHandler, IPointerDownHandl
     [SerializeField] private Transform moveRoot;
     
     
-    private bool isClicked = false;
+    private bool _isClicked = false;
 
-    private Vector2 startPos;
-    private float moveLimit = 1000f;
+    private Vector2 _startPos;
+    private float _moveLimit = 1000f;
 
-    private float moveVelocity = 0f;
+    private float _moveVelocity = 0f;
     
-    private List<SpriteRenderer> levelObjects;
+    private List<SpriteRenderer> _levelObjects;
 
     private void Start()
     {
-        levelObjects = new List<SpriteRenderer>();
+        _levelObjects = new List<SpriteRenderer>();
         for (int i = 0; i < moveRoot.childCount; i++)
         {
-            levelObjects.Add(moveRoot.GetChild(i).GetComponent<SpriteRenderer>());
+            _levelObjects.Add(moveRoot.GetChild(i).GetComponent<SpriteRenderer>());
         }
         
-        startPos = moveRoot.position;
+        _startPos = moveRoot.position;
         float itemsY = 0;
 
-        foreach (var renderer in levelObjects)
+        foreach (var renderer in _levelObjects)
         {
             itemsY += renderer.bounds.size.y;
         }
         
-        moveLimit = itemsY - GetComponent<SpriteMask>().bounds.size.y;
+        _moveLimit = itemsY - GetComponent<SpriteMask>().bounds.size.y;
     }
 
     private void Update()
     {
-        if (Mathf.Abs(moveVelocity) < Single.Epsilon) return;
+        if (Mathf.Abs(_moveVelocity) < Single.Epsilon) return;
         Vector2 pos = moveRoot.position;
-        pos += new Vector2(0,moveVelocity * Time.deltaTime * 0.25f);
+        pos += new Vector2(0,_moveVelocity * Time.deltaTime * 0.25f);
 
-        if (pos.y < startPos.y)
+        if (pos.y < _startPos.y)
         {
-            pos.y = startPos.y;
-            moveVelocity = 0f;
+            pos.y = _startPos.y;
+            _moveVelocity = 0f;
         }
         
-        if (pos.y - startPos.y > moveLimit)
+        if (pos.y - _startPos.y > _moveLimit)
         {
-            pos.y = startPos.y + moveLimit;
-            moveVelocity = 0f;
+            pos.y = _startPos.y + _moveLimit;
+            _moveVelocity = 0f;
         }
 
-        moveVelocity *= 0.95f;
+        _moveVelocity *= 0.95f;
 
         moveRoot.position = pos;
     }
@@ -67,19 +67,19 @@ public class MenuScroll : MonoBehaviour, IPointerClickHandler, IPointerDownHandl
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        isClicked = true;
+        _isClicked = true;
         Debug.Log("oi");
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        isClicked = false;
+        _isClicked = false;
         Debug.Log("io");
     }
 
     public void OnPointerMove(PointerEventData eventData)
     {
-        if (!isClicked) return;
-        moveVelocity = eventData.delta.y;
+        if (!_isClicked) return;
+        _moveVelocity = eventData.delta.y;
     }
 }

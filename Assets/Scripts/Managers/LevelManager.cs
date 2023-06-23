@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Managers
 {
@@ -9,6 +10,11 @@ namespace Managers
         private List<LevelData> levels = new List<LevelData>();
 
         private Dictionary<int, LevelData> levelDict = new Dictionary<int, LevelData>();
+        private int _levelToLoad;
+
+        public bool IsReady;
+
+        public bool GotHighScore { get; set; }
 
         public static LevelManager Instance { get; private set; }
 
@@ -30,6 +36,10 @@ namespace Managers
         {
             levels.AddRange(levelDataCollection.LevelDatas);
             ConvertToDict();
+            
+            SceneChangeHandler.Instance.SceneChangedEvent += OnSceneLoaded;
+
+            IsReady = true;
         }
 
         public void AddDownloadedLevels()
@@ -56,7 +66,33 @@ namespace Managers
         {
             return levelDict[number];
         }
-        
-        
+
+        public int GetLevelToLoad()
+        {
+            return _levelToLoad;
+        }
+
+        public void Load(int level)
+        {
+            _levelToLoad = level;
+            SceneManager.LoadScene("Scenes/MatchRowScene");
+        }
+
+        void OnSceneLoaded(string newName, string oldName)
+        {
+            if (newName == Constants.MAIN_SCENE_NAME && oldName == Constants.MATCH_SCENE_NAME)
+            {
+                if (GotHighScore)
+                {
+                    Debug.Log("Yahoo");
+                    GotHighScore = false;
+                }
+                else
+                {
+                    
+                }
+            }
+        }
+
     }
 }

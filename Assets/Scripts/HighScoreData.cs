@@ -11,9 +11,11 @@ public class HighScoreData
 [Serializable]
 public class HighScoreList
 {
-    public List<HighScoreData> highScoreDatas;
+    public int highestLevel;
+    public int highestLevelSeen;
+    public List<HighScoreData> highScoreDatas = new List<HighScoreData>();
 
-    [NonSerialized] public Dictionary<int, int> scoreDict;
+    [NonSerialized] public Dictionary<int, int> scoreDict = new Dictionary<int, int>();
 
     public void ListToDict()
     {  

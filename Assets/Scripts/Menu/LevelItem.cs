@@ -1,12 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
 public class LevelItem : MonoBehaviour
 {
-    private int level_number = -1;
-    
+    [SerializeField] private LevelLoadButton button;
     
     [SerializeField] private TextMeshPro LevelText;
     [SerializeField] private TextMeshPro MoveCountText;
@@ -14,9 +11,10 @@ public class LevelItem : MonoBehaviour
 
     public void Init(LevelData levelData)
     {
-        level_number = levelData.level_number;
+        button.Init(levelData.level_number);
         LevelText.SetText("Level " + levelData.level_number);
         MoveCountText.SetText(levelData.move_count + " Moves");
-        HighScoreText.SetText("Highscore : 0");
+
+        HighScoreText.SetText("Highscore : " + DataManager.Instance.GetHighScoreForLevel(levelData.level_number));
     }
 }

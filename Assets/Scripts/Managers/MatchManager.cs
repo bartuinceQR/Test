@@ -45,6 +45,8 @@ public class MatchManager : MonoBehaviour
     {
         boardState = BoardState.Locked;
         
+        GameplayManager.Instance.SpendMove();
+        
         float duration = 0.33f;
 
         Sequence tweenSeq = DOTween.Sequence();
@@ -55,12 +57,13 @@ public class MatchManager : MonoBehaviour
         //should I let both squares handle it on their own?.....probably not
         tweenSeq.OnComplete(() =>
         {
-            var fromItemObj = from.GetItemObject();
+            Transform fromItemObj = from.GetItemObject();
             ItemType fromItemType = from.GetItemType();
             from.SetItemObject(to.GetItemObject(), to.GetItemType());
             to.SetItemObject(fromItemObj, fromItemType);
             
             GameplayManager.Instance.CheckRows(from, to);
+            GameplayManager.Instance.CheckStatus();
 
             boardState = BoardState.Unlocked;
             holdingSwap = false;

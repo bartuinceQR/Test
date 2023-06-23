@@ -10,12 +10,21 @@ public class GameplayManager : MonoBehaviour
     [SerializeField] private Transform bottomLeft;
     
     [SerializeField] private GameObject squarePrefab;
+    [SerializeField] private ScoresCollection scoresCollection;
 
 
     private Square[][] _squares;
 
-    private LevelData currentLevelData;
-    
+    private LevelData _currentLevelData;
+
+    private int _score;
+    private int _movesLeft;
+
+    private List<int> _clearedRows;
+
+    public static event Action<int> ScoreChangedEvent;
+    public static event Action<int> MoveSpentEvent;
+
     public static GameplayManager Instance { get; private set; }
 
     private void Awake()
@@ -33,9 +42,9 @@ public class GameplayManager : MonoBehaviour
 
     private void Start()
     {
-        LoadLevel(LevelManager.Instance.GetLevelByNumber(1));
+        int levelToLoad = LevelManager.Instance.GetLevelToLoad();
+        LoadLevel(LevelManager.Instance.GetLevelByNumber(levelToLoad));
     }
-
 
     public void LoadLevel(LevelData levelData)
     {
@@ -66,15 +75,52 @@ public class GameplayManager : MonoBehaviour
             }
         }
 
-        currentLevelData = levelData;
+        _currentLevelData = levelData;
+
+        _score = 0;
+        _movesLeft = _currentLevelData.move_count;
+        
+        ScoreChangedEvent?.Invoke(_score);
+        MoveSpentEvent?.Invoke(_movesLeft);
     }
+    
+    void AddScore(int score)
+    {
+        _score += score;
+        ScoreChangedEvent?.Invoke(_score);
+    }
+
+    public void SpendMove()
+    {
+        _movesLeft--;
+        MoveSpentEvent?.Invoke(_movesLeft);
+    }
+
+    public void CheckStatus()
+    {
+        if (!CheckResumable())
+        {
+            MatchManager.Instance.boardState = BoardState.Completed;
+            StartCoroutine(WaitAndFinishLevel());
+        }
+    }
+    
+    IEnumerator WaitAndFinishLevel()
+    {
+        yield return new WaitForSeconds(1f);
+
+        bool newHighScore = DataManager.Instance.SetHighScore(_currentLevelData.level_number, _score);
+        DataManager.Instance.SetHighestLevel(_currentLevelData.level_number);
+        LevelManager.Instance.GotHighScore = true;
+    }
+
     
     public void CheckRows(Square startSquare, Square endSquare)
     {
         int row1 = startSquare.GetCoordinates().row;
         int row2 = endSquare.GetCoordinates().row;
 
-        int width = currentLevelData.grid_width;
+        int width = _currentLevelData.grid_width;
 
         List<int> rows = new List<int>() { row1, row2 };
 
@@ -100,22 +146,72 @@ public class GameplayManager : MonoBehaviour
 
             if (allSame)
             {
-                ClearRow(row);
+                ClearRow(row, rowItemType);
             }
         }
     }
 
-
-    void ClearRow(int row)
+    void ClearRow(int row, ItemType rowItemType)
     {
-        int width = currentLevelData.grid_width;
+        int width = _currentLevelData.grid_width;
 
         for (int i = 0; i < width; i++)
         {
             Square square = _squares[row][i];
 
             square.SetItemType(ItemType.Completed);
+            
+            AddScore(scoresCollection.GetScoreValue(rowItemType));
         }
+        
+        _clearedRows.Add(row);
+    }
+
+    bool CheckResumable()
+    {
+        if (_clearedRows.Count == 0) return true;
+
+        Dictionary<ItemType, int> itemCounts = new Dictionary<ItemType, int>();
+
+        for (int row = 0; row < _currentLevelData.grid_height; row++)
+        {
+            for (int col = 0; col < _currentLevelData.grid_width; col++)
+            {
+
+                Square sq = _squares[row][col];
+                ItemType sqItem = sq.GetItemType();
+
+                if (sqItem == ItemType.Completed)
+                {
+                    row++;
+
+                    if (CheckItemCounts(itemCounts)) return true;
+                    itemCounts.Clear();
+                    
+                    break;
+                }
+                else
+                {
+                    if (!itemCounts.TryAdd(sqItem, 1))
+                    {
+                        itemCounts[sqItem]++;
+                    }
+                }
+            }
+        }
+        return CheckItemCounts(itemCounts);
+    }
+
+
+    private bool CheckItemCounts(Dictionary<ItemType, int> items)
+    {
+        foreach (var item in items.Keys)
+        {
+            if (items[item] > _currentLevelData.grid_width) return true;
+        }
+
+        return false;
     }
     
 }
+

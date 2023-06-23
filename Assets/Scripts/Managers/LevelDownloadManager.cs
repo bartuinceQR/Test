@@ -34,7 +34,7 @@ public class LevelDownloadManager : MonoBehaviour
         } 
     }
 
-    private void Start()
+    private IEnumerator Start()
     {
         if (!File.Exists(Path.Combine(Application.persistentDataPath, ("data/" + PERSISTENT_DATA_NAME))))
         {
@@ -43,6 +43,7 @@ public class LevelDownloadManager : MonoBehaviour
         else
         {
             LoadDownloadedLevels();
+            yield return new WaitUntil(() => LevelManager.Instance.IsReady);
             LevelManager.Instance.AddDownloadedLevels();
         }
     }
