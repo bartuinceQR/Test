@@ -122,7 +122,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   LevelsArea: {fileID: 6867983765645677120}
   LevelItemPrefab: {fileID: 3520452210899274482, guid: 9b3298e42acd44543b7d4daf0b4677b3, type: 3}
-  spacingMultiplier: 2
+  MenuScroll: {fileID: 6867983765617666039}
+  openSound: {fileID: 8300000, guid: 1de1e20025250c341958d972d08a27a3, type: 3}
+  spacingMultiplier: 1.5
 --- !u!1 &6867983765468960089
 GameObject:
   m_ObjectHideFlags: 0

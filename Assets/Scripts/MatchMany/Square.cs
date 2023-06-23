@@ -90,9 +90,14 @@ public class Square : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, 
 
     public Tweener SwapTo(Square to, float duration = 1f)
     {
+        itemSprite.GetComponent<Animator>().Play("ItemSwap");
         return itemObject.DOMove(to.itemCenter.position, duration).SetEase(Ease.InCubic);
     }
-    
+
+    public void PlayClearAnimation()
+    {
+        itemSprite.GetComponent<Animator>().Play("RowMatch");
+    }
     
     public void OnPointerDown(PointerEventData eventData)
     {

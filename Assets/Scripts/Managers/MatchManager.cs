@@ -1,14 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using Unity.Collections;
 using UnityEngine;
 
 public class MatchManager : MonoBehaviour
 {
+
+    [SerializeField] private AudioClip matchSound;
+    
     public static MatchManager Instance { get; private set; }
 
+    [HideInInspector]
     public bool holdingSwap = false;
+    [HideInInspector]
     public Square currentlySelectedSquare;
+    [HideInInspector]
     public BoardState boardState;
 
     private void Awake()
@@ -53,6 +60,8 @@ public class MatchManager : MonoBehaviour
         
         tweenSeq.Insert(0,from.SwapTo(to, duration));
         tweenSeq.Insert(0,to.SwapTo(from, duration));
+        
+        AudioManager.Instance.PlaySFX(matchSound);
 
         //should I let both squares handle it on their own?.....probably not
         tweenSeq.OnComplete(() =>
@@ -64,8 +73,7 @@ public class MatchManager : MonoBehaviour
             
             GameplayManager.Instance.CheckRows(from, to);
             GameplayManager.Instance.CheckStatus();
-
-            boardState = BoardState.Unlocked;
+            
             holdingSwap = false;
             currentlySelectedSquare = null;
         });

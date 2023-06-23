@@ -7,8 +7,8 @@ using UnityEngine.EventSystems;
 public class MenuScroll : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, IPointerUpHandler, IPointerMoveHandler
 {
     [SerializeField] private Transform moveRoot;
-    
-    
+
+    private bool _isReady = false;
     private bool _isClicked = false;
 
     private Vector2 _startPos;
@@ -18,7 +18,7 @@ public class MenuScroll : MonoBehaviour, IPointerClickHandler, IPointerDownHandl
     
     private List<SpriteRenderer> _levelObjects;
 
-    private void Start()
+    public void Init()
     {
         _levelObjects = new List<SpriteRenderer>();
         for (int i = 0; i < moveRoot.childCount; i++)
@@ -29,12 +29,25 @@ public class MenuScroll : MonoBehaviour, IPointerClickHandler, IPointerDownHandl
         _startPos = moveRoot.position;
         float itemsY = 0;
 
+        float minY = (float)Double.MaxValue;
+        float maxY = (float)Double.MinValue;
+
         foreach (var renderer in _levelObjects)
         {
+            var itemMaxY = renderer.transform.position.y + renderer.bounds.size.y;
+            var itemMinY = renderer.transform.position.y - renderer.bounds.size.y;
+
+            minY = Mathf.Min(itemMinY, minY);
+            maxY = Mathf.Max(itemMaxY, maxY);
+            
             itemsY += renderer.bounds.size.y;
         }
-        
-        _moveLimit = itemsY - GetComponent<SpriteMask>().bounds.size.y;
+
+        _moveLimit = maxY - minY;
+
+        _isReady = true;
+
+        //_moveLimit = itemsY - GetComponent<SpriteMask>().bounds.size.y;
     }
 
     private void Update()
@@ -68,18 +81,17 @@ public class MenuScroll : MonoBehaviour, IPointerClickHandler, IPointerDownHandl
     public void OnPointerDown(PointerEventData eventData)
     {
         _isClicked = true;
-        Debug.Log("oi");
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
         _isClicked = false;
-        Debug.Log("io");
     }
 
     public void OnPointerMove(PointerEventData eventData)
     {
         if (!_isClicked) return;
+        if (!_isReady) return;
         _moveVelocity = eventData.delta.y;
     }
 }

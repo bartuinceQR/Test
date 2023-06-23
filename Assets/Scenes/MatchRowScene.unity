@@ -314,10 +314,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 270a0fc312a516c499bb8ed1e6aa5203, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  matchSound: {fileID: 8300000, guid: 06a79aa73b77459449c6056e5b59e323, type: 3}
   holdingSwap: 0
   currentlySelectedSquare: {fileID: 0}
   boardState: 0
---- !u!1 &253271228
+--- !u!1 &241461032
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -325,42 +326,43 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 253271230}
-  - component: {fileID: 253271229}
+  - component: {fileID: 241461034}
+  - component: {fileID: 241461033}
   m_Layer: 0
-  m_Name: LevelManager
+  m_Name: GameAudioHandler
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &253271229
+--- !u!114 &241461033
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 253271228}
+  m_GameObject: {fileID: 241461032}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6ef6275baa81d5a4bad4c13a88056b1c, type: 3}
+  m_Script: {fileID: 11500000, guid: 09e47e6060a0675488133864c250a210, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levelDataCollection: {fileID: 11400000, guid: 9100db96a137eea4cbe3ca892adcac10, type: 2}
---- !u!4 &253271230
+  easyModeMusic: {fileID: 8300000, guid: a9de81cf672981843b39536a7c00022c, type: 3}
+  hardModeMusic: {fileID: 8300000, guid: f45884b83d48e4f4ea4a5a2c21374e92, type: 3}
+--- !u!4 &241461034
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 253271228}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.4933081, y: -4.067727, z: -2.0909638}
+  m_GameObject: {fileID: 241461032}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.531585, y: -0.63843143, z: -0.055499572}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1850611212}
-  m_RootOrder: 2
+  m_Father: {fileID: 0}
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &256505321
 GameObject:
@@ -564,7 +566,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1850611212}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &662787837
 MonoBehaviour:
@@ -1061,6 +1063,8 @@ MonoBehaviour:
   bottomLeft: {fileID: 158418118}
   squarePrefab: {fileID: 1125534379928646211, guid: 096d8d3d23c314c9880787d10385e0a1, type: 3}
   scoresCollection: {fileID: 11400000, guid: 01d5517a1e0b1499ea854bf5b09b1b3b, type: 2}
+  rowMatchSFX: {fileID: 8300000, guid: 4e4e54b462e33714593a15ba01445072, type: 3}
+  finishSFX: {fileID: 8300000, guid: aebf89f8e3762f0469852ee736bd1f7d, type: 3}
 --- !u!4 &1355590982
 Transform:
   m_ObjectHideFlags: 0
@@ -1451,7 +1455,6 @@ Transform:
   m_Children:
   - {fileID: 223884913}
   - {fileID: 1355590982}
-  - {fileID: 253271230}
   - {fileID: 662787836}
   m_Father: {fileID: 0}
   m_RootOrder: 1

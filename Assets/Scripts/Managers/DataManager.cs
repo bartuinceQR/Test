@@ -17,7 +17,7 @@ public class DataManager : MonoBehaviour
     {
         if (Instance != null && Instance != this) 
         { 
-            Destroy(this); 
+            Destroy(gameObject); 
         } 
         else 
         { 
@@ -51,10 +51,15 @@ public class DataManager : MonoBehaviour
     
     public bool SetHighScore(int level, int value)
     {
-        var oldScore = _highScoreData.scoreDict[level];
-        if (value <= oldScore) return false;
-        
-        
+        if (_highScoreData.scoreDict.TryGetValue(level, out int oldScore))
+        {
+            if (value <= oldScore) return false;
+            _highScoreData.scoreDict[level] = value;
+        }
+        else
+        {
+            _highScoreData.scoreDict.Add(level, value);
+        }
         SaveHighScoreData();
         return true;
     }

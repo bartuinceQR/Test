@@ -1,3 +1,5 @@
+using System;
+using Managers;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -7,10 +9,25 @@ namespace Menu
     {
         [SerializeField] private GameObject _levelsPopupPrefab;
 
+        private void Start()
+        {
+            LevelManager.Instance.LevelsPopupOpened += DisableThis;
+        }
+
+        private void OnDestroy()
+        {
+            LevelManager.Instance.LevelsPopupOpened -= DisableThis;
+        }
+
+        void DisableThis()
+        {
+            gameObject.SetActive(false);
+        }
+
         public void OnPointerClick(PointerEventData eventData)
         {
-            Instantiate(_levelsPopupPrefab, transform.position, Quaternion.identity);
-            gameObject.SetActive(false);
+            if (LevelManager.Instance.IsLocked) return;
+            LevelManager.Instance.ShowLevelsPopup();
         }
     }
 }

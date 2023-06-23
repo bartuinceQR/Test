@@ -2,11 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 using Managers;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -25,7 +23,7 @@ public class LevelDownloadManager : MonoBehaviour
     {
         if (Instance != null && Instance != this) 
         { 
-            Destroy(this); 
+            Destroy(gameObject); 
         } 
         else 
         { 
@@ -69,6 +67,9 @@ public class LevelDownloadManager : MonoBehaviour
         }
 
         DownloadMissingLevels();
+        
+        yield return new WaitUntil(() => LevelManager.Instance.IsReady);
+        LevelManager.Instance.AddDownloadedLevels();
     }
     
 
@@ -117,6 +118,8 @@ public class LevelDownloadManager : MonoBehaviour
         }
 
         ListOfLevelData list = new ListOfLevelData(){levels = missingLevels};
+
+        downloadedLevels = missingLevels;
         
         string jsonData = JsonUtility.ToJson(list, true);
         byte[] byteData;
@@ -173,62 +176,6 @@ public class LevelDownloadManager : MonoBehaviour
         //_levelDataCollection.LevelDatas.AddRange(returnedData.levels);
 
         downloadedLevels = returnedData.levels;
-    }
-
-
-    [MenuItem("Levels/Get Starter Levels")]
-    public static void DownloadStarterLevels()
-    {
-        string[] result = AssetDatabase.FindAssets("LevelDataCollection", new[]{@"Assets\Collections"});
-        LevelDataCollection collection = null;
-    
-        if (result.Length > 1)
-        {
-            Debug.LogError("More than 1 asset found.");
-            return;
-        }
-    
-        if(result.Length == 0)
-        {
-            Debug.Log("Creating new asset.");
-            collection = ScriptableObject.CreateInstance<LevelDataCollection>();
-            AssetDatabase.CreateAsset(collection, @"Assets\LevelDataCollection.asset");
-        }
-        else
-        {
-            string path = AssetDatabase.GUIDToAssetPath(result[0]);
-            collection= (LevelDataCollection)AssetDatabase.LoadAssetAtPath(path, typeof(LevelDataCollection));
-            Debug.Log("Found asset.");
-        }
-
-        if (collection == null) return;
-
-
-        for (int i = 1; i <= 10; i++)
-        {
-            var downloadURL = URL_BASE_STRING + LEVEL_PREFIX + "A" + i;
-
-            using (UnityWebRequest request = UnityWebRequest.Get(downloadURL))
-            {
-                var op = request.SendWebRequest();
-
-                while (!op.isDone)
-                {
-                    Task.Yield();
-                }
-
-                LevelData levelData = LevelJSONConverter.ConvertToLevelData(request.downloadHandler.text);
-                
-                collection.LevelDatas.Add(levelData);
-            }
-        }
-        
-        collection.LevelDatas.Sort();
-        
-            
-        EditorUtility.SetDirty(collection);
-        AssetDatabase.SaveAssets();
-        AssetDatabase.Refresh();
     }
 
     //lol JSON limitations

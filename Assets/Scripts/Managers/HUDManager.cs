@@ -19,13 +19,24 @@ public class HUDManager : MonoBehaviour
     {
         if (Instance != null && Instance != this) 
         { 
-            Destroy(this); 
+            Destroy(gameObject); 
         } 
         else 
         { 
             Instance = this;
-            DontDestroyOnLoad(this);
         } 
+    }
+
+    public void SetBGSprite(bool isHard)
+    {
+        if (isHard)
+        {
+            levelBGSprite.sprite = backgroundSprites[1];
+        }
+        else
+        {
+            levelBGSprite.sprite = backgroundSprites[0];
+        }
     }
     
     // Start is called before the first frame update

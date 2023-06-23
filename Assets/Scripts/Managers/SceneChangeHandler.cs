@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 public class SceneChangeHandler : MonoBehaviour
 {
 
-    private Scene _lastLoadedScene;
+    private string _lastLoadedScene;
     public Action<string, string> SceneChangedEvent;
     
     public static SceneChangeHandler Instance { get; private set; }
@@ -16,7 +16,7 @@ public class SceneChangeHandler : MonoBehaviour
     {
         if (Instance != null && Instance != this) 
         { 
-            Destroy(this); 
+            Destroy(gameObject); 
         } 
         else 
         { 
@@ -28,7 +28,7 @@ public class SceneChangeHandler : MonoBehaviour
     
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        SceneChangedEvent?.Invoke(scene.name, _lastLoadedScene.name);
-        _lastLoadedScene = scene;
+        SceneChangedEvent?.Invoke(scene.name, _lastLoadedScene);
+        _lastLoadedScene = scene.name;
     }
 }

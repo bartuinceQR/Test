@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Managers;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameplayManager : MonoBehaviour
 {
@@ -12,6 +13,9 @@ public class GameplayManager : MonoBehaviour
     [SerializeField] private GameObject squarePrefab;
     [SerializeField] private ScoresCollection scoresCollection;
 
+    [SerializeField] private AudioClip rowMatchSFX;
+    [SerializeField] private AudioClip finishSFX;
+
 
     private Square[][] _squares;
 
@@ -20,7 +24,7 @@ public class GameplayManager : MonoBehaviour
     private int _score;
     private int _movesLeft;
 
-    private List<int> _clearedRows;
+    private List<int> _clearedRows = new List<int>();
 
     public static event Action<int> ScoreChangedEvent;
     public static event Action<int> MoveSpentEvent;
@@ -36,7 +40,6 @@ public class GameplayManager : MonoBehaviour
         else 
         { 
             Instance = this;
-            DontDestroyOnLoad(this);
         } 
     }
 
@@ -58,6 +61,13 @@ public class GameplayManager : MonoBehaviour
         bottomLeft.position = boardCenter.position - offset;
         Vector3 startPos = bottomLeft.position + new Vector3(squareWidth / 2, squareHeight / 2, 0);
 
+        var scale = 1f;
+        
+        if (squareWidth * width > Screen.width)
+        {
+            scale = (float)Screen.width / (squareWidth * width);
+        }
+
 
         _squares = new Square[height][];
 
@@ -69,7 +79,8 @@ public class GameplayManager : MonoBehaviour
             {
                 Vector3 squareOffset = new Vector3(col * squareWidth, row * squareHeight, 0);
 
-                var square = Instantiate(squarePrefab, startPos + squareOffset, Quaternion.identity, bottomLeft).GetComponent<Square>();
+                var square = Instantiate(squarePrefab, startPos + squareOffset * scale, Quaternion.identity, bottomLeft).GetComponent<Square>();
+                square.transform.localScale *= scale;
                 square.Init(col, row, levelData.grid[row * width + col]);
                 _squares[row][col] = square;
             }
@@ -98,20 +109,32 @@ public class GameplayManager : MonoBehaviour
 
     public void CheckStatus()
     {
-        if (!CheckResumable())
+        if (!CheckResumeable() || _movesLeft == 0)
         {
             MatchManager.Instance.boardState = BoardState.Completed;
             StartCoroutine(WaitAndFinishLevel());
+        }
+        else
+        {
+            MatchManager.Instance.boardState = BoardState.Unlocked;
         }
     }
     
     IEnumerator WaitAndFinishLevel()
     {
-        yield return new WaitForSeconds(1f);
+        AudioManager.Instance.Stop();
+        AudioManager.Instance.PlaySFX(finishSFX);
+        
+        yield return new WaitForSeconds(3f);
 
         bool newHighScore = DataManager.Instance.SetHighScore(_currentLevelData.level_number, _score);
-        DataManager.Instance.SetHighestLevel(_currentLevelData.level_number);
-        LevelManager.Instance.GotHighScore = true;
+        DataManager.Instance.SetHighestLevel(_currentLevelData.level_number+1);
+        LevelManager.Instance.GotHighScore = newHighScore;
+        
+        LevelManager.Instance.FadeIn(() =>
+        {
+            SceneManager.LoadScene(Constants.MAIN_SCENE_NAME);
+        });
     }
 
     
@@ -147,6 +170,7 @@ public class GameplayManager : MonoBehaviour
             if (allSame)
             {
                 ClearRow(row, rowItemType);
+                AudioManager.Instance.PlaySFX(rowMatchSFX);
             }
         }
     }
@@ -160,6 +184,7 @@ public class GameplayManager : MonoBehaviour
             Square square = _squares[row][i];
 
             square.SetItemType(ItemType.Completed);
+            square.PlayClearAnimation();
             
             AddScore(scoresCollection.GetScoreValue(rowItemType));
         }
@@ -167,7 +192,7 @@ public class GameplayManager : MonoBehaviour
         _clearedRows.Add(row);
     }
 
-    bool CheckResumable()
+    bool CheckResumeable()
     {
         if (_clearedRows.Count == 0) return true;
 
@@ -177,14 +202,11 @@ public class GameplayManager : MonoBehaviour
         {
             for (int col = 0; col < _currentLevelData.grid_width; col++)
             {
-
                 Square sq = _squares[row][col];
                 ItemType sqItem = sq.GetItemType();
 
                 if (sqItem == ItemType.Completed)
                 {
-                    row++;
-
                     if (CheckItemCounts(itemCounts)) return true;
                     itemCounts.Clear();
                     
@@ -207,7 +229,7 @@ public class GameplayManager : MonoBehaviour
     {
         foreach (var item in items.Keys)
         {
-            if (items[item] > _currentLevelData.grid_width) return true;
+            if (items[item] >= _currentLevelData.grid_width) return true;
         }
 
         return false;
