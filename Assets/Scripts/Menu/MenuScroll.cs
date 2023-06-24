@@ -27,7 +27,6 @@ public class MenuScroll : MonoBehaviour, IPointerClickHandler, IPointerDownHandl
         }
         
         _startPos = moveRoot.position;
-        float itemsY = 0;
 
         float minY = (float)Double.MaxValue;
         float maxY = (float)Double.MinValue;
@@ -39,13 +38,26 @@ public class MenuScroll : MonoBehaviour, IPointerClickHandler, IPointerDownHandl
 
             minY = Mathf.Min(itemMinY, minY);
             maxY = Mathf.Max(itemMaxY, maxY);
-            
-            itemsY += renderer.bounds.size.y;
         }
 
         _moveLimit = maxY - minY;
         _moveLimit -= GetComponent<SpriteMask>().bounds.size.y - ((maxY - minY) * _levelObjects.Count / 2000f); //oh boy magic numbers
         if (_moveLimit < 0) _moveLimit = 0;
+
+        if (DataManager.Instance.GetHighestLevelSeen() < _levelObjects.Count
+            && DataManager.Instance.GetHighestLevel() != DataManager.Instance.GetHighestLevelSeen())
+        {
+            Vector2 pos = moveRoot.position;
+            float yDiff = _levelObjects[DataManager.Instance.GetHighestLevelSeen()].transform.position.y - pos.y;
+            pos.y -= yDiff;
+            
+            if (pos.y < _startPos.y)
+            {
+                pos.y = _startPos.y;
+            }
+
+            moveRoot.position = pos;
+        }
         
         _isReady = true;
     }
