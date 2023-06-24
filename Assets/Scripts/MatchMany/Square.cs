@@ -83,6 +83,19 @@ public class Square : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, 
         }
     }
 
+    public Vector2 GetSizeInPixels()
+    {
+        Camera cam = Camera.main;
+        
+        Vector3 min = GetComponent<SpriteRenderer>().bounds.min;
+        Vector3 max = GetComponent<SpriteRenderer>().bounds.max;
+
+        Vector3 minScreen = cam.WorldToScreenPoint(min);
+        Vector3 maxScreen = cam.WorldToScreenPoint(max);
+
+        return maxScreen - minScreen;
+    }
+
     public Vector2 GetSquareSize()
     {
         return GetComponent<SpriteRenderer>().bounds.size;

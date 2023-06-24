@@ -56,17 +56,20 @@ public class GameplayManager : MonoBehaviour
 
         float squareWidth = squarePrefab.GetComponent<Square>().GetSquareSize().x;
         float squareHeight = squarePrefab.GetComponent<Square>().GetSquareSize().y;
-
-        Vector3 offset = new Vector3(width / 2f * squareWidth, height / 2f * squareHeight, 0f);
-        bottomLeft.position = boardCenter.position - offset;
-        Vector3 startPos = bottomLeft.position + new Vector3(squareWidth / 2, squareHeight / 2, 0);
-
-        var scale = 1f;
         
-        if (squareWidth * width > Screen.width)
+        var scale = 1f;
+        Vector2 squareSizeOnScreen = squarePrefab.GetComponent<Square>().GetSizeInPixels();
+        
+        //if the squares are too big, shrink em
+        if (squareSizeOnScreen.x * width > Screen.width)
         {
-            scale = (float)Screen.width / (squareWidth * width);
+            scale = (float)Screen.width / (squareSizeOnScreen.x * width);
         }
+        
+        Vector3 offset = new Vector3(scale * width / 2f * squareWidth, scale *height / 2f * squareHeight, 0f);
+        bottomLeft.position = boardCenter.position - offset;
+        Vector3 startPos = bottomLeft.position + new Vector3(scale * squareWidth / 2, scale * squareHeight / 2, 0);
+
 
 
         _squares = new Square[height][];

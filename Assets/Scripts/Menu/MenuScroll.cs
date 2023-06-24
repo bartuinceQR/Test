@@ -34,8 +34,8 @@ public class MenuScroll : MonoBehaviour, IPointerClickHandler, IPointerDownHandl
 
         foreach (var renderer in _levelObjects)
         {
-            var itemMaxY = renderer.transform.position.y + renderer.bounds.size.y;
-            var itemMinY = renderer.transform.position.y - renderer.bounds.size.y;
+            var itemMaxY = renderer.transform.position.y + renderer.bounds.size.y/2;
+            var itemMinY = renderer.transform.position.y - renderer.bounds.size.y/2;
 
             minY = Mathf.Min(itemMinY, minY);
             maxY = Mathf.Max(itemMaxY, maxY);
@@ -44,10 +44,10 @@ public class MenuScroll : MonoBehaviour, IPointerClickHandler, IPointerDownHandl
         }
 
         _moveLimit = maxY - minY;
-
+        _moveLimit -= GetComponent<SpriteMask>().bounds.size.y - ((maxY - minY) * _levelObjects.Count / 2000f); //oh boy magic numbers
+        if (_moveLimit < 0) _moveLimit = 0;
+        
         _isReady = true;
-
-        //_moveLimit = itemsY - GetComponent<SpriteMask>().bounds.size.y;
     }
 
     private void Update()
